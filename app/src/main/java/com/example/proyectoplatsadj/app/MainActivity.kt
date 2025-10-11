@@ -1,4 +1,4 @@
-package com.example.proyectoplatsadj
+package com.example.proyectoplatsadj.app
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
