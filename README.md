@@ -136,8 +136,15 @@ Gradle 8.0+
 Android SDK 27+ (Minimo: Android 8.1 Oreo)
 
 Descripcion: 
-
-1. Home Screen 
+1. Splash Screen
+Pantalla de carga inicial con logo y fondo `#F8F0E4`. Transición automática a Welcome tras 2 segundos.
+3. Onboarding Screen
+Pantalla de bienvenida con imagen de fondo, texto motivacional y botones para Registrarme o Iniciar Sesión.
+4. Login Screen
+Formulario de inicio de sesión con correo, contraseña y enlace a registro.
+5. Register Screen
+Formulario completo de registro: nombre, apellido, correo, contraseña (con confirmación).
+6. Home Screen 
 Muestra las tareas programadas para hoy (datos simulados)
 Indicadores de prioridad por colores:
 Rojo: Prioridad alta (1)
@@ -145,26 +152,26 @@ Rojo: Prioridad alta (1)
  Verde: Prioridad baja (3)
 Estados implementados: Loading, Error, Empty, Content
 Datos de ejemplo: 3 tareas hardcoded
-2. Calendar Screen 
+7. Calendar Screen 
 Vista de calendario mensual (grid placeholder)
 Seleccion de fechas simulada
 Muestra la fecha "22 de octubre 2025"
 Estados implementados: Loading, Error, Empty, Content
 Nota: El calendario es un placeholder visual
-3. Tasks List Screen 
+8. Tasks List Screen 
 Lista completa de todas las tareas (datos simulados)
 Boton flotante (+) para agregar nuevas tareas
 Navega a NewTask Screen al presionar el FAB
 Organizacion por fecha (simulada)
 Estados implementados: Loading, Error, Empty, Content
 Datos de ejemplo: 5 tareas hardcoded
-4. New Task Screen 
+9. New Task Screen 
 Formulario para crear tareas nuevas
 Campos: Nombre, Detalles, Fecha de finalizacion, Importancia
 Nota: Los datos NO se guardan realmente, solo simula el proceso
 Al presionar "Agregar tarea" regresa a la pantalla anterior
 Estados implementados: Idle, Loading, Error
- Navegacion Bottom Bar (Agregada para demostracion)
+Navegacion Bottom Bar (Agregada para demostracion)
 Una barra de navegacion inferior fue agregada temporalmente para facilitar la demostracion del flujo entre pantallas:
 
 
