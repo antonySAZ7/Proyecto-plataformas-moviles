@@ -18,7 +18,10 @@ import com.example.proyectoplatsadj.R
 import androidx.compose.ui.tooling.preview.Preview
 
 @Composable
-fun WelcomeScreen() {
+fun WelcomeScreen(
+    onRegisterClick: () -> Unit,
+    onLoginClick: () -> Unit
+) {
     Box(modifier = Modifier.fillMaxSize()) {
         // Espacio para la imagen de fondo
         Image(
@@ -62,7 +65,7 @@ fun WelcomeScreen() {
                 )
                 Spacer(modifier = Modifier.height(24.dp))
                 Button(
-                    onClick = { /* Ir a registro */ },
+                    onClick = onRegisterClick,
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50)),
                     modifier = Modifier.fillMaxWidth()
                 ) {
@@ -72,17 +75,20 @@ fun WelcomeScreen() {
                 Text(
                     text = "Iniciar Sesión",
                     color = Color(0xFF2196F3),
-                    modifier = Modifier.clickable { /* Ir a login */ }
+                    modifier = Modifier.clickable(onClick = onLoginClick)
                 )
             }
         }
     }
 }
 
-@Preview(showBackground = true, backgroundColor = 0xFFFFFFFF)
+@Preview(showBackground = true)
 @Composable
 fun WelcomeScreenPreview() {
     MaterialTheme {
-        WelcomeScreen()
+        WelcomeScreen(
+            onRegisterClick = {},
+            onLoginClick = {}
+        )
     }
 }

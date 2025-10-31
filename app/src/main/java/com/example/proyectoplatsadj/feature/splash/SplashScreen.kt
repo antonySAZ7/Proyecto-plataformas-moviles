@@ -4,17 +4,25 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.proyectoplatsadj.R
-import androidx.compose.ui.tooling.preview.Preview
+import kotlinx.coroutines.delay
 
 @Composable
-fun SplashScreen() {
+fun SplashScreen(
+    onTimeout: () -> Unit
+) {
+    LaunchedEffect(Unit) {
+        delay(500) // 0.5 segundos
+        onTimeout()
+    }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -24,7 +32,7 @@ fun SplashScreen() {
             painter = painterResource(id = R.drawable.tomakelogo),
             contentDescription = "Splash Image",
             modifier = Modifier
-                .size(300.dp)
+                .size(200.dp)
                 .align(Alignment.Center)
         )
     }
@@ -34,6 +42,6 @@ fun SplashScreen() {
 @Composable
 fun SplashScreenPreview() {
     MaterialTheme {
-        SplashScreen()
+        SplashScreen(onTimeout = {})
     }
 }
