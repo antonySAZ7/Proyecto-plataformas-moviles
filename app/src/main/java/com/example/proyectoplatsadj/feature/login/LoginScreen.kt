@@ -9,22 +9,41 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.proyectoplatsadj.R
-import androidx.compose.ui.tooling.preview.Preview
+import com.example.proyectoplatsadj.viewmodel.LoginViewModel
+
+// Estados de UI
+sealed interface LoginUiState {
+    data object Idle : LoginUiState
+    data object Loading : LoginUiState
+    data class Error(val message: String) : LoginUiState
+}
 
 @Composable
 fun LoginScreen(
     onLoginSuccess: () -> Unit,
-    onRegisterClick: () -> Unit
+    onRegisterClick: () -> Unit,
+    viewModel: LoginViewModel = viewModel()
 ) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
+
+    val uiState by viewModel.uiState.collectAsState()
+
+    // Escuchar cuando el login es exitoso
+    LaunchedEffect(Unit) {
+        viewModel.loginSuccess.collect {
+            onLoginSuccess()
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -51,7 +70,8 @@ fun LoginScreen(
             label = { Text("Correo") },
             placeholder = { Text("Ingresa tu correo") },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            enabled = uiState !is LoginUiState.Loading
         )
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -73,8 +93,20 @@ fun LoginScreen(
                     )
                 }
             },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            enabled = uiState !is LoginUiState.Loading
         )
+
+        // Mostrar error si existe
+        if (uiState is LoginUiState.Error) {
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = (uiState as LoginUiState.Error).message,
+                color = MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.bodySmall
+            )
+        }
+
         Spacer(modifier = Modifier.height(8.dp))
 
         Text(
@@ -87,11 +119,19 @@ fun LoginScreen(
         Spacer(modifier = Modifier.height(24.dp))
 
         Button(
-            onClick = onLoginSuccess,
+            onClick = { viewModel.login(email, password) },
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50)),
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            enabled = uiState !is LoginUiState.Loading
         ) {
-            Text("Iniciar Sesión")
+            if (uiState is LoginUiState.Loading) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(20.dp),
+                    color = Color.White
+                )
+            } else {
+                Text("Iniciar Sesión")
+            }
         }
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -99,17 +139,6 @@ fun LoginScreen(
             text = "¿No tienes cuenta? Regístrate",
             color = Color(0xFF2196F3),
             modifier = Modifier.clickable(onClick = onRegisterClick)
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun LoginScreenPreview() {
-    MaterialTheme {
-        LoginScreen(
-            onLoginSuccess = {},
-            onRegisterClick = {}
         )
     }
 }

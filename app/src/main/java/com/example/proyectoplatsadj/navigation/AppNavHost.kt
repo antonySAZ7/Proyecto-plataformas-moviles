@@ -7,6 +7,7 @@ import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -19,17 +20,21 @@ import com.example.proyectoplatsadj.feature.onboarding.WelcomeScreen
 import com.example.proyectoplatsadj.feature.login.LoginScreen
 import com.example.proyectoplatsadj.feature.register.RegisterScreen
 import com.example.proyectoplatsadj.feature.taskslist.*
+import com.example.proyectoplatsadj.viewmodel.*
 import kotlinx.serialization.Serializable
 
-// Destinations Type-Safe
-@Serializable object HomeDestination
-@Serializable object CalendarDestination
-@Serializable object TasksListDestination
-@Serializable object NewTaskDestination
+// ============================================
+// DESTINATIONS TYPE-SAFE
+// ============================================
+
 @Serializable object SplashDestination
 @Serializable object WelcomeDestination
 @Serializable object LoginDestination
 @Serializable object RegisterDestination
+@Serializable object HomeDestination
+@Serializable object CalendarDestination
+@Serializable object TasksListDestination
+@Serializable object NewTaskDestination
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -52,7 +57,11 @@ fun AppNavHost() {
                 NavigationBar {
                     NavigationBarItem(
                         selected = currentRoute == HomeDestination::class.qualifiedName,
-                        onClick = { navController.navigate(HomeDestination) },
+                        onClick = {
+                            navController.navigate(HomeDestination) {
+                                popUpTo(HomeDestination) { inclusive = true }
+                            }
+                        },
                         icon = { Icon(Icons.Filled.Home, "Home") },
                         label = { Text("Home") }
                     )
@@ -80,17 +89,25 @@ fun AppNavHost() {
     ) { paddingValues ->
         NavHost(
             navController = navController,
-            startDestination = SplashDestination, // ← Empieza en Splash
+            startDestination = SplashDestination,
             modifier = Modifier.padding(paddingValues)
         ) {
-            // === SPLASH ===
+            // ============================================
+            // FLUJO DE AUTENTICACIÓN
+            // ============================================
+
+            // SPLASH
             composable<SplashDestination> {
                 SplashScreen(
-                    onTimeout = { navController.navigate(WelcomeDestination) }
+                    onTimeout = {
+                        navController.navigate(WelcomeDestination) {
+                            popUpTo(SplashDestination) { inclusive = true }
+                        }
+                    }
                 )
             }
 
-            // === WELCOME ===
+            // WELCOME (Onboarding)
             composable<WelcomeDestination> {
                 WelcomeScreen(
                     onRegisterClick = { navController.navigate(RegisterDestination) },
@@ -98,43 +115,50 @@ fun AppNavHost() {
                 )
             }
 
-            // === LOGIN ===
+            // LOGIN - CON VIEWMODEL
             composable<LoginDestination> {
+                val loginViewModel: LoginViewModel = viewModel()
                 LoginScreen(
-                    onLoginSuccess = { navController.navigate(HomeDestination) },
-                    onRegisterClick = { navController.navigate(RegisterDestination) }
+                    onLoginSuccess = {
+                        navController.navigate(HomeDestination) {
+                            popUpTo(LoginDestination) { inclusive = true }
+                        }
+                    },
+                    onRegisterClick = { navController.navigate(RegisterDestination) },
+                    viewModel = loginViewModel
                 )
             }
 
-            // === REGISTER ===
+            // REGISTER - CON VIEWMODEL
             composable<RegisterDestination> {
+                val registerViewModel: RegisterViewModel = viewModel()
                 RegisterScreen(
-                    onRegisterSuccess = { navController.navigate(HomeDestination) },
-                    onLoginClick = { navController.navigate(LoginDestination) }
+                    onRegisterSuccess = {
+                        navController.navigate(HomeDestination) {
+                            popUpTo(RegisterDestination) { inclusive = true }
+                        }
+                    },
+                    onLoginClick = { navController.popBackStack() },
+                    viewModel = registerViewModel
                 )
             }
 
-            // === HOME ===
+            // ============================================
+            // PANTALLAS PRINCIPALES - CON VIEWMODELS Y APIs
+            // ============================================
+
+            // HOME - CON VIEWMODEL
             composable<HomeDestination> {
-                val homeState = remember {
-                    mutableStateOf<HomeUiState>(
-                        HomeUiState.Content(
-                            today = listOf(
-                                HomeTaskUi("1", "Tarea Cálculo", "Ejercicio 2-3 página 250", 1),
-                                HomeTaskUi("2", "Laboratorio Plataformas", "Implementar navegación", 2),
-                                HomeTaskUi("3", "Comprar despensa", "Para la semana", 3)
-                            )
-                        )
-                    )
-                }
+                val homeViewModel: HomeViewModel = viewModel()
+                val uiState by homeViewModel.uiState.collectAsState()
 
                 HomeScreen(
-                    state = homeState.value,
-                    onRetry = { homeState.value = HomeUiState.Loading }
+                    state = uiState,
+                    onRetry = { homeViewModel.retry() }
                 )
             }
 
-            // === CALENDAR ===
+            // CALENDAR - Sin cambios (placeholder)
             composable<CalendarDestination> {
                 val calendarState = remember {
                     mutableStateOf<CalendarUiState>(
@@ -148,40 +172,36 @@ fun AppNavHost() {
                 )
             }
 
-            // === TASKS LIST ===
+            // TASKS LIST - CON VIEWMODEL
             composable<TasksListDestination> {
-                val tasksState = remember {
-                    mutableStateOf<TasksListUiState>(
-                        TasksListUiState.Content(
-                            tasks = listOf(
-                                TaskRowUi("1", "Tarea de microprocesadores", "Laboratorio 5", 1),
-                                TaskRowUi("2", "Tarea plataformas", "Navegación type-safe", 2),
-                                TaskRowUi("3", "Despensa", "Ir al súper", 3),
-                                TaskRowUi("4", "Examen Física 3", "Estudiar para el examen", 1),
-                                TaskRowUi("5", "Pagar gym", "Mensualidad", 2)
-                            )
-                        )
-                    )
-                }
+                val tasksViewModel: TasksListViewModel = viewModel()
+                val uiState by tasksViewModel.uiState.collectAsState()
 
                 TasksListScreen(
-                    state = tasksState.value,
-                    onRetry = { tasksState.value = TasksListUiState.Loading },
+                    state = uiState,
+                    onRetry = { tasksViewModel.retry() },
                     onAddClick = { navController.navigate(NewTaskDestination) }
                 )
             }
 
-            // === NEW TASK ===
+            // NEW TASK - CON VIEWMODEL
             composable<NewTaskDestination> {
-                val newTaskState = remember { mutableStateOf<NewTaskUiState>(NewTaskUiState.Idle) }
+                val newTaskViewModel: NewTaskViewModel = viewModel()
+                val uiState by newTaskViewModel.uiState.collectAsState()
+
+                // Escuchar cuando la tarea se crea
+                LaunchedEffect(Unit) {
+                    newTaskViewModel.taskCreated.collect {
+                        navController.popBackStack()
+                    }
+                }
 
                 NewTaskScreen(
-                    state = newTaskState.value,
+                    state = uiState,
                     onSubmit = { title, detail, date, priority ->
-                        newTaskState.value = NewTaskUiState.Loading
-                        navController.popBackStack()
+                        newTaskViewModel.createTask(title, detail, date, priority)
                     },
-                    onRetry = { newTaskState.value = NewTaskUiState.Idle }
+                    onRetry = { newTaskViewModel.retry() }
                 )
             }
         }

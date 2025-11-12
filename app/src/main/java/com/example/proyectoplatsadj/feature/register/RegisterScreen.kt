@@ -3,7 +3,9 @@ package com.example.proyectoplatsadj.feature.register
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -14,13 +16,22 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.proyectoplatsadj.R
-import androidx.compose.ui.tooling.preview.Preview
+import com.example.proyectoplatsadj.viewmodel.RegisterViewModel
+
+// Estados de UI
+sealed interface RegisterUiState {
+    data object Idle : RegisterUiState
+    data object Loading : RegisterUiState
+    data class Error(val message: String) : RegisterUiState
+}
 
 @Composable
 fun RegisterScreen(
     onRegisterSuccess: () -> Unit,
-    onLoginClick: () -> Unit
+    onLoginClick: () -> Unit,
+    viewModel: RegisterViewModel = viewModel()
 ) {
     var firstName by remember { mutableStateOf("") }
     var lastName by remember { mutableStateOf("") }
@@ -30,9 +41,19 @@ fun RegisterScreen(
     var passwordVisible by remember { mutableStateOf(false) }
     var confirmVisible by remember { mutableStateOf(false) }
 
+    val uiState by viewModel.uiState.collectAsState()
+
+    // Escuchar cuando el registro es exitoso
+    LaunchedEffect(Unit) {
+        viewModel.registerSuccess.collect {
+            onRegisterSuccess()
+        }
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .verticalScroll(rememberScrollState())
             .padding(32.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
@@ -54,7 +75,8 @@ fun RegisterScreen(
             onValueChange = { firstName = it },
             label = { Text("Nombre(s)") },
             placeholder = { Text("John") },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            enabled = uiState !is RegisterUiState.Loading
         )
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -63,7 +85,8 @@ fun RegisterScreen(
             onValueChange = { lastName = it },
             label = { Text("Apellido(s)") },
             placeholder = { Text("Doe") },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            enabled = uiState !is RegisterUiState.Loading
         )
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -73,7 +96,8 @@ fun RegisterScreen(
             label = { Text("Correo") },
             placeholder = { Text("Ingresa tu correo") },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            enabled = uiState !is RegisterUiState.Loading
         )
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -96,7 +120,8 @@ fun RegisterScreen(
                 }
             },
             supportingText = { Text("Must contain 8 char.") },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            enabled = uiState !is RegisterUiState.Loading
         )
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -118,16 +143,38 @@ fun RegisterScreen(
                     )
                 }
             },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            enabled = uiState !is RegisterUiState.Loading
         )
+
+        // Mostrar error si existe
+        if (uiState is RegisterUiState.Error) {
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = (uiState as RegisterUiState.Error).message,
+                color = MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.bodySmall
+            )
+        }
+
         Spacer(modifier = Modifier.height(24.dp))
 
         Button(
-            onClick = onRegisterSuccess,
+            onClick = {
+                viewModel.register(firstName, lastName, email, password, confirmPassword)
+            },
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50)),
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            enabled = uiState !is RegisterUiState.Loading
         ) {
-            Text("Registrarme")
+            if (uiState is RegisterUiState.Loading) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(20.dp),
+                    color = Color.White
+                )
+            } else {
+                Text("Registrarme")
+            }
         }
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -135,17 +182,6 @@ fun RegisterScreen(
             text = "¿Ya tienes cuenta? Inicia sesión",
             color = Color(0xFF2196F3),
             modifier = Modifier.clickable(onClick = onLoginClick)
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun RegisterScreenPreview() {
-    MaterialTheme {
-        RegisterScreen(
-            onRegisterSuccess = {},
-            onLoginClick = {}
         )
     }
 }

@@ -3,7 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     id("org.jetbrains.kotlin.plugin.serialization") version "2.0.0"
-    id("kotlin-kapt")
+    id("com.google.devtools.ksp") version "2.0.0-1.0.24"
 }
 
 android {
@@ -43,7 +43,7 @@ android {
 
 dependencies {
     // ===================================
-    // DEPENDENCIAS BASE (Ya las tenías)
+    // DEPENDENCIAS BASE
     // ===================================
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
@@ -64,26 +64,24 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
 
     // ===================================
-    // NAVEGACIÓN TYPE-SAFE (OBLIGATORIO)
+    // NAVEGACIÓN TYPE-SAFE
     // ===================================
-    implementation("androidx.navigation:navigation-compose:2.8.3") // ⬆️ Versión actualizada
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3") // ⬆️ Actualizado
+    implementation("androidx.navigation:navigation-compose:2.8.3")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
 
     // ===================================
-    // COROUTINES (Ya lo tenías)
+    // VIEWMODEL & LIFECYCLE
     // ===================================
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1") // ⬆️ Actualizado
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.5")
+    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.5")
 
     // ===================================
-    // ROOM DATABASE (Base de datos local - OBLIGATORIO según requisitos)
+    // COROUTINES
     // ===================================
-    val roomVersion = "2.6.1"
-    implementation("androidx.room:room-runtime:$roomVersion")
-    implementation("androidx.room:room-ktx:$roomVersion")
-    kapt("androidx.room:room-compiler:$roomVersion")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1")
 
     // ===================================
-    // RETROFIT (Para APIs - OPCIONAL pero recomendado)
+    // RETROFIT (APIs REST)
     // ===================================
     val retrofitVersion = "2.11.0"
     implementation("com.squareup.retrofit2:retrofit:$retrofitVersion")
@@ -92,17 +90,25 @@ dependencies {
     implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
 
     // ===================================
-    // KOTLINX DATETIME (Manejo de fechas)
+    // ROOM DATABASE (Cache local)
+    // ===================================
+    val roomVersion = "2.6.1"
+    implementation("androidx.room:room-runtime:$roomVersion")
+    implementation("androidx.room:room-ktx:$roomVersion")
+    ksp("androidx.room:room-compiler:$roomVersion")
+
+    // ===================================
+    // DATASTORE (SharedPreferences moderno)
+    // ===================================
+    implementation("androidx.datastore:datastore-preferences:1.1.1")
+
+    // ===================================
+    // KOTLINX DATETIME
     // ===================================
     implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.1")
 
     // ===================================
-    // COIL (Carga de imágenes - OPCIONAL)
+    // COIL (Carga de imágenes)
     // ===================================
     implementation("io.coil-kt:coil-compose:2.7.0")
-
-    // ===================================
-    // ACCOMPANIST (Utilidades UI - OPCIONAL)
-    // ===================================
-    implementation("com.google.accompanist:accompanist-permissions:0.36.0")
 }
