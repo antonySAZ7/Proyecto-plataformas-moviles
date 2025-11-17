@@ -4,7 +4,7 @@
     "type": "APK",
     "kind": "Directory"
   },
-  "applicationId": "com.joseovando.quito",
+  "applicationId": "com.example.proyectoplatsadj",
   "variantName": "debug",
   "elements": [
     {
@@ -17,5 +17,5 @@
     }
   ],
   "elementType": "File",
-  "minSdkVersionForDexing": 26
+  "minSdkVersionForDexing": 27
 }
