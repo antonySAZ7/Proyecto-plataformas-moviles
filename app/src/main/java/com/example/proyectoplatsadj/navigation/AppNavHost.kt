@@ -36,7 +36,6 @@ import kotlinx.serialization.Serializable
 @Serializable object CalendarDestination
 @Serializable object TasksListDestination
 @Serializable object NewTaskDestination
-
 @Serializable object ForgotPasswordDestination
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -162,17 +161,14 @@ fun AppNavHost() {
                 )
             }
 
-            // CALENDAR - Sin cambios (placeholder)
+            // CALENDAR - CON VIEWMODEL
             composable<CalendarDestination> {
-                val calendarState = remember {
-                    mutableStateOf<CalendarUiState>(
-                        CalendarUiState.Content(selectedLabel = "22 de octubre 2025")
-                    )
-                }
+                val calendarViewModel: CalendarViewModel = viewModel()
+                val calendarState by calendarViewModel.uiState.collectAsState()
 
                 CalendarScreen(
-                    state = calendarState.value,
-                    onRetry = { calendarState.value = CalendarUiState.Loading }
+                    state = calendarState,
+                    onRetry = { calendarViewModel.retry() }
                 )
             }
 
@@ -202,13 +198,14 @@ fun AppNavHost() {
 
                 NewTaskScreen(
                     state = uiState,
-                    onSubmit = { title, detail, date, priority ->
-                        newTaskViewModel.createTask(title, detail, date, priority)
+                    onSubmit = { title, detail, date, time, difficulty ->
+                        newTaskViewModel.createTask(title, detail, date, time, difficulty)
                     },
                     onRetry = { newTaskViewModel.retry() }
                 )
             }
 
+            // FORGOT PASSWORD
             composable<ForgotPasswordDestination> {
                 val forgotViewModel: ForgotPasswordViewModel = viewModel()
                 ForgotPasswordScreen(

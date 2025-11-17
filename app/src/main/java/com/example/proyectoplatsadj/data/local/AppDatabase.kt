@@ -6,8 +6,46 @@ import com.example.proyectoplatsadj.data.model.Task
 import kotlinx.coroutines.flow.Flow
 
 // ============================================
-// DAO - Data Access Object
+// ENTIDAD USER
+// ============================================
 
+@Entity(tableName = "users")
+data class User(
+    @PrimaryKey(autoGenerate = true)
+    val id: Int = 0,
+    val firstName: String,
+    val lastName: String,
+    val email: String,
+    val password: String,
+    val createdAt: Long = System.currentTimeMillis()
+)
+
+// ============================================
+// USER DAO
+// ============================================
+
+@Dao
+interface UserDao {
+
+    @Insert
+    suspend fun insertUser(user: User): Long
+
+    @Query("SELECT * FROM users WHERE email = :email LIMIT 1")
+    suspend fun getUserByEmail(email: String): User?
+
+    @Query("SELECT * FROM users WHERE email = :email AND password = :password LIMIT 1")
+    suspend fun login(email: String, password: String): User?
+
+    @Query("SELECT COUNT(*) FROM users WHERE email = :email")
+    suspend fun emailExists(email: String): Int
+
+    @Query("SELECT * FROM users")
+    suspend fun getAllUsers(): List<User>
+}
+
+// ============================================
+// TASK DAO
+// ============================================
 
 @Dao
 interface TaskDao {
@@ -44,12 +82,13 @@ interface TaskDao {
 // ============================================
 
 @Database(
-    entities = [Task::class],
-    version = 1,
+    entities = [Task::class, User::class],  // ← AGREGAMOS User aquí
+    version = 5,  // ← INCREMENTAMOS la versión
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract fun taskDao(): TaskDao
+    abstract fun userDao(): UserDao  // ← AGREGAMOS UserDao
 
     companion object {
         @Volatile
