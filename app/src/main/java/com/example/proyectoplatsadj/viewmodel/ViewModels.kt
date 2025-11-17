@@ -345,6 +345,13 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    fun deleteTask(taskId: String) {
+        viewModelScope.launch {
+            taskRepository.deleteTask(Task(id = taskId.toInt(), userId = 0, title = "", completed = false))
+            loadTodayTasks()
+        }
+    }
+
     fun retry() {
         loadTodayTasks()
     }
@@ -399,6 +406,13 @@ class TasksListViewModel(application: Application) : AndroidViewModel(applicatio
                     }
                 }
             }
+        }
+    }
+
+    fun deleteTask(taskId: String) {
+        viewModelScope.launch {
+            taskRepository.deleteTask(Task(id = taskId.toInt(), userId = 0, title = "", completed = false))
+            loadAllTasks()
         }
     }
 

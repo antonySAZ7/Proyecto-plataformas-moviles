@@ -157,7 +157,8 @@ fun AppNavHost() {
 
                 HomeScreen(
                     state = uiState,
-                    onRetry = { homeViewModel.retry() }
+                    onRetry = { homeViewModel.retry() },
+                    onDeleteTask = { taskId -> homeViewModel.deleteTask(taskId) }
                 )
             }
 
@@ -180,7 +181,8 @@ fun AppNavHost() {
                 TasksListScreen(
                     state = uiState,
                     onRetry = { tasksViewModel.retry() },
-                    onAddClick = { navController.navigate(NewTaskDestination) }
+                    onAddClick = { navController.navigate(NewTaskDestination) },
+                    onDeleteTask = { taskId -> tasksViewModel.deleteTask(taskId) }
                 )
             }
 
