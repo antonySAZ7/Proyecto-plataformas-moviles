@@ -422,8 +422,9 @@ class TasksListViewModel(application: Application) : AndroidViewModel(applicatio
 }
 
 // ============================================
-// NEW TASK VIEWMODEL
+// NEW TASK VIEWMODEL - CON NOTIFICACIONES
 // ============================================
+// REEMPLAZA SOLO ESTA CLASE en ViewModels.kt
 
 class NewTaskViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -447,6 +448,27 @@ class NewTaskViewModel(application: Application) : AndroidViewModel(application)
 
             when (val result = taskRepository.createTask(title, detail, date, time, difficulty)) {
                 is ApiResult.Success -> {
+                    val createdTask = result.data
+
+                    // ✨ NUEVO: Mostrar notificación de tarea creada
+                    com.example.proyectoplatsadj.utils.NotificationHelper.showTaskCreatedNotification(
+                        getApplication(),
+                        createdTask.id,
+                        createdTask.title,
+                        createdTask.detail
+                    )
+
+                    // ✨ NUEVO: Programar recordatorios
+                    com.example.proyectoplatsadj.utils.NotificationScheduler.scheduleMultipleReminders(
+                        getApplication(),
+                        createdTask.id,
+                        createdTask.title,
+                        createdTask.detail,
+                        createdTask.dueDate,
+                        createdTask.dueTime,
+                        createdTask.difficulty
+                    )
+
                     _uiState.value = NewTaskUiState.Idle
                     _taskCreated.emit(true)
                 }

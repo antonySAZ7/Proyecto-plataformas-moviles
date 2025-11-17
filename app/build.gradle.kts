@@ -111,4 +111,9 @@ dependencies {
     // COIL (Carga de imágenes)
     // ===================================
     implementation("io.coil-kt:coil-compose:2.7.0")
+
+    // ===================================
+    // WORKMANAGER (Para notificaciones programadas) ⬅️ NUEVO
+    // ===================================
+    implementation("androidx.work:work-runtime-ktx:2.9.0")
 }

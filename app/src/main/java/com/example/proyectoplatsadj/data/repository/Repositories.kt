@@ -135,7 +135,7 @@ class TaskRepository(
         return taskDao.getTodayTasks()
     }
 
-    // Crear nueva tarea (ACTUALIZADO CON NUEVOS PARÁMETROS)
+
     suspend fun createTask(
         title: String,
         detail: String,
@@ -144,7 +144,35 @@ class TaskRepository(
         difficulty: Int
     ): ApiResult<Task> {
         return try {
-            // Crear tarea solo local
+            val response = taskApi.createTodo(
+                CreateTaskRequest(title = title, userId = 1)
+            )
+
+            if (response.isSuccessful && response.body() != null) {
+                val created = response.body()!!
+
+
+                val newTask = Task(
+                    id = created.id,
+                    userId = created.userId,
+                    title = created.title,
+                    completed = created.completed,
+                    detail = detail,
+                    dueDate = dueDate,
+                    dueTime = dueTime,
+                    difficulty = difficulty,
+                    priority = difficulty
+                )
+
+
+                taskDao.insertTask(newTask)
+
+                ApiResult.Success(newTask)
+            } else {
+                ApiResult.Error("No se pudo crear la tarea")
+            }
+        } catch (e: Exception) {
+            // Crear tarea solo local si falla la API
             val localTask = Task(
                 id = (System.currentTimeMillis() % Int.MAX_VALUE).toInt(),
                 userId = 1,
@@ -158,8 +186,6 @@ class TaskRepository(
             )
             taskDao.insertTask(localTask)
             ApiResult.Success(localTask)
-        } catch (e: Exception) {
-            ApiResult.Error("Error al crear la tarea: ${e.message}", e)
         }
     }
 
@@ -177,7 +203,7 @@ class TaskRepository(
     // Eliminar tarea
     suspend fun deleteTask(task: Task): ApiResult<Unit> {
         return try {
-            // Eliminar localmente
+
             taskDao.deleteTask(task)
             ApiResult.Success(Unit)
         } catch (e: Exception) {
