@@ -1,14 +1,9 @@
 package com.example.proyectoplatsadj.utils
 
-/**
- * Validador de correos electrónicos
- */
+
 object EmailValidator {
 
-    /**
-     * Patrón regex para validar emails
-     * Acepta formatos como: user@example.com, user.name@example.co.uk, etc.
-     */
+
     private val EMAIL_REGEX = Regex(
         pattern = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}\$"
     )

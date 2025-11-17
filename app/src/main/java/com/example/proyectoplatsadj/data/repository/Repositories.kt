@@ -11,25 +11,19 @@ import com.example.proyectoplatsadj.data.remote.TaskApiService
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 
-// ============================================
-// AUTH REPOSITORY (CON BASE DE DATOS LOCAL)
-// ============================================
+
 
 class AuthRepository(
     private val authApi: AuthApiService,
     private val userDao: UserDao
 ) {
 
-    /**
-     * Login local - verifica en la base de datos
-     */
+
     suspend fun login(email: String, password: String): ApiResult<LoginResponse> {
         return try {
-            // Buscar usuario en la base de datos local
             val user = userDao.login(email, password)
 
             if (user != null) {
-                // Usuario encontrado - login exitoso
                 ApiResult.Success(
                     LoginResponse(
                         token = "local_token_${user.id}_${System.currentTimeMillis()}",
@@ -47,9 +41,6 @@ class AuthRepository(
         }
     }
 
-    /**
-     * Registro local - guarda en la base de datos
-     */
     suspend fun register(
         email: String,
         password: String,
@@ -57,14 +48,12 @@ class AuthRepository(
         lastName: String?
     ): ApiResult<RegisterResponse> {
         return try {
-            // Verificar si el email ya existe
             val existingUser = userDao.getUserByEmail(email)
 
             if (existingUser != null) {
                 return ApiResult.Error("Este correo ya está registrado")
             }
 
-            // Crear nuevo usuario
             val newUser = User(
                 firstName = firstName ?: "",
                 lastName = lastName ?: "",
@@ -72,10 +61,8 @@ class AuthRepository(
                 password = password
             )
 
-            // Insertar en la base de datos
             val userId = userDao.insertUser(newUser)
 
-            // Retornar respuesta exitosa
             ApiResult.Success(
                 RegisterResponse(
                     token = "local_token_${userId}_${System.currentTimeMillis()}",
@@ -90,17 +77,13 @@ class AuthRepository(
         }
     }
 
-    /**
-     * Recuperar contraseña - simulado localmente
-     */
+
     fun forgotPassword(email: String): Flow<ApiResult<Unit>> = flow {
         emit(ApiResult.Loading)
         try {
-            // Verificar si el email existe
             val user = userDao.getUserByEmail(email)
 
             if (user != null) {
-                // Simular envío de correo exitoso
                 emit(ApiResult.Success(Unit))
             } else {
                 emit(ApiResult.Error("No existe una cuenta con este correo"))
@@ -111,26 +94,21 @@ class AuthRepository(
     }
 }
 
-// ============================================
-// TASK REPOSITORY
-// ============================================
+
 
 class TaskRepository(
     private val taskApi: TaskApiService,
     private val taskDao: TaskDao
 ) {
 
-    // Obtener todas las tareas - SOLO LOCALES
     fun getAllTasks(): Flow<ApiResult<List<Task>>> = flow {
         emit(ApiResult.Loading)
 
-        // Solo obtener tareas locales, ignorar la API
         taskDao.getAllTasks().collect { localTasks ->
             emit(ApiResult.Success(localTasks))
         }
     }
 
-    // Obtener tareas de hoy
     fun getTodayTasks(): Flow<List<Task>> {
         return taskDao.getTodayTasks()
     }
@@ -172,7 +150,6 @@ class TaskRepository(
                 ApiResult.Error("No se pudo crear la tarea")
             }
         } catch (e: Exception) {
-            // Crear tarea solo local si falla la API
             val localTask = Task(
                 id = (System.currentTimeMillis() % Int.MAX_VALUE).toInt(),
                 userId = 1,

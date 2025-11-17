@@ -67,7 +67,6 @@ object NotificationHelper {
         taskTitle: String,
         taskDetail: String?
     ) {
-        // ✅ Verificar permiso ANTES de intentar mostrar
         if (!hasNotificationPermission(context)) return
 
         try {
@@ -84,7 +83,7 @@ object NotificationHelper {
 
             val notification = NotificationCompat.Builder(context, CHANNEL_ID_GENERAL)
                 .setSmallIcon(android.R.drawable.ic_dialog_info)
-                .setContentTitle("✅ Tarea creada")
+                .setContentTitle("Tarea creada")
                 .setContentText(taskTitle)
                 .setStyle(
                     NotificationCompat.BigTextStyle()
@@ -95,7 +94,6 @@ object NotificationHelper {
                 .setAutoCancel(true)
                 .build()
 
-            // ✅ Solo llamar notify si tenemos permiso
             if (ActivityCompat.checkSelfPermission(
                     context,
                     Manifest.permission.POST_NOTIFICATIONS

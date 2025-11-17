@@ -22,7 +22,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.proyectoplatsadj.R
 import com.example.proyectoplatsadj.viewmodel.LoginViewModel
 
-// Estados de UI
 sealed interface LoginUiState {
     data object Idle : LoginUiState
     data object Loading : LoginUiState
@@ -41,7 +40,6 @@ fun LoginScreen(
     val focusManager = LocalFocusManager.current
     var passwordVisible by remember { mutableStateOf(false) }
 
-    // Escuchar cuando el login es exitoso
     LaunchedEffect(Unit) {
         viewModel.loginSuccess.collect {
             onLoginSuccess()
@@ -55,7 +53,7 @@ fun LoginScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        // Logo
+
         Image(
             painter = painterResource(id = R.drawable.tomakelogoredondo),
             contentDescription = "Logo",
@@ -71,7 +69,6 @@ fun LoginScreen(
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // Campo de Email con validación
         Column(modifier = Modifier.fillMaxWidth()) {
             OutlinedTextField(
                 value = formState.email,
@@ -106,7 +103,6 @@ fun LoginScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Campo de Contraseña con validación
         Column(modifier = Modifier.fillMaxWidth()) {
             OutlinedTextField(
                 value = formState.password,
@@ -158,7 +154,6 @@ fun LoginScreen(
             }
         }
 
-        // Mostrar error si existe
         if (uiState is LoginUiState.Error) {
             Spacer(modifier = Modifier.height(8.dp))
             Text(

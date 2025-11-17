@@ -33,9 +33,9 @@ data class CalendarTaskUi(
 ) {
     fun getDifficultyColor(): Color {
         return when (difficulty) {
-            1 -> Color(0xFF4CAF50) // Verde - Fácil
-            2 -> Color(0xFFFFC107) // Amarillo - Medio
-            3 -> Color(0xFFF44336) // Rojo - Difícil
+            1 -> Color(0xFF4CAF50)
+            2 -> Color(0xFFFFC107)
+            3 -> Color(0xFFF44336)
             else -> Color(0xFF9E9E9E)
         }
     }
@@ -99,14 +99,12 @@ fun CalendarScreen(
                         .padding(16.dp),
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    // Header del mes con navegación
                     MonthHeader(
                         currentMonth = currentMonth,
                         onPreviousMonth = { currentMonth = currentMonth.minusMonths(1) },
                         onNextMonth = { currentMonth = currentMonth.plusMonths(1) }
                     )
 
-                    // Grid del calendario
                     CalendarGrid(
                         currentMonth = currentMonth,
                         selectedDate = selectedDate,
@@ -114,7 +112,6 @@ fun CalendarScreen(
                         onDateSelected = { selectedDate = it }
                     )
 
-                    // Lista de tareas del día seleccionado
                     TasksForSelectedDate(
                         selectedDate = selectedDate,
                         tasks = state.tasksGroupedByDate[selectedDate] ?: emptyList()
@@ -187,7 +184,6 @@ fun CalendarGrid(
         Column(
             modifier = Modifier.padding(12.dp)
         ) {
-            // Días de la semana
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceEvenly
@@ -206,7 +202,6 @@ fun CalendarGrid(
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Grid de días
             val firstDayOfMonth = currentMonth.atDay(1)
             val firstDayOfWeek = firstDayOfMonth.dayOfWeek.value % 7
             val daysInMonth = currentMonth.lengthOfMonth()
@@ -399,7 +394,6 @@ fun CalendarTaskCard(task: CalendarTaskUi) {
                 }
             }
 
-            // Badge de dificultad
             Surface(
                 shape = RoundedCornerShape(8.dp),
                 color = task.getDifficultyColor().copy(alpha = 0.2f),

@@ -19,7 +19,7 @@ fun SplashScreen(
     onTimeout: () -> Unit
 ) {
     LaunchedEffect(Unit) {
-        delay(500) // 0.5 segundos
+        delay(500)
         onTimeout()
     }
 

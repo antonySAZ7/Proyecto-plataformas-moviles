@@ -21,7 +21,7 @@ fun ForgotPasswordScreen(
     onBackToLogin: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    val email by viewModel.email.collectAsState()  // ← CORREGIDO: Usar collectAsState()
+    val email by viewModel.email.collectAsState()
 
     Column(
         modifier = Modifier
@@ -43,12 +43,12 @@ fun ForgotPasswordScreen(
         Spacer(modifier = Modifier.height(24.dp))
 
         OutlinedTextField(
-            value = email,  // ← CORREGIDO: Usar el valor recolectado
-            onValueChange = { viewModel.updateEmail(it) },  // ← CORREGIDO: Usar método updateEmail
+            value = email,
+            onValueChange = { viewModel.updateEmail(it) },
             label = { Text("Correo electrónico") },
             placeholder = { Text("Ingresa tu correo") },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-            enabled = uiState !is ForgotPasswordUiState.Loading,  // ← CORREGIDO: Deshabilitar durante loading
+            enabled = uiState !is ForgotPasswordUiState.Loading,
             modifier = Modifier.fillMaxWidth()
         )
 

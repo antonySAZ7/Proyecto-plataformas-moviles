@@ -21,7 +21,7 @@ object NotificationScheduler {
         dueDate: String?,
         dueTime: String?,
         difficulty: Int,
-        reminderMinutesBefore: Long = 60 // 1 hora antes
+        reminderMinutesBefore: Long = 60
     ) {
         if (dueDate == null) return
 
@@ -32,33 +32,28 @@ object NotificationScheduler {
                 try {
                     LocalTime.parse(dueTime)
                 } catch (e: Exception) {
-                    LocalTime.of(23, 59) // Si falla, usar fin del día
+                    LocalTime.of(23, 59)
                 }
             } else {
-                LocalTime.of(23, 59) // Si no hay hora, usar fin del día
+                LocalTime.of(23, 59)
             }
 
-            // Crear fecha/hora de entrega
             val dueDateTime = LocalDateTime.of(date, time)
 
-            // Calcular cuando debe salir la notificación (X minutos antes)
             val notificationDateTime = dueDateTime.minusMinutes(reminderMinutesBefore)
 
-            // Convertir a milisegundos
             val currentTime = System.currentTimeMillis()
             val notificationTime = notificationDateTime
                 .atZone(ZoneId.systemDefault())
                 .toInstant()
                 .toEpochMilli()
 
-            // Solo programar si es en el futuro
             if (notificationTime <= currentTime) {
                 return
             }
 
             val delay = notificationTime - currentTime
 
-            // Crear los datos para el Worker
             val inputData = workDataOf(
                 "TASK_ID" to taskId,
                 "TASK_TITLE" to taskTitle,
@@ -68,14 +63,12 @@ object NotificationScheduler {
                 "DIFFICULTY" to difficulty
             )
 
-            // Crear la solicitud de trabajo
             val workRequest = OneTimeWorkRequestBuilder<TaskReminderWorker>()
                 .setInitialDelay(delay, TimeUnit.MILLISECONDS)
                 .setInputData(inputData)
                 .addTag("task_reminder_$taskId")
                 .build()
 
-            // Programar el trabajo
             WorkManager.getInstance(context).enqueueUniqueWork(
                 "task_reminder_$taskId",
                 ExistingWorkPolicy.REPLACE,
@@ -97,13 +90,11 @@ object NotificationScheduler {
         dueTime: String?,
         difficulty: Int
     ) {
-        // Recordatorio 1 día antes (1440 minutos)
         scheduleTaskReminder(
             context, taskId, taskTitle, taskDetail,
             dueDate, dueTime, difficulty, 1440
         )
 
-        // Recordatorio 1 hora antes (60 minutos)
         scheduleTaskReminder(
             context, taskId + 5000, taskTitle, taskDetail,
             dueDate, dueTime, difficulty, 60

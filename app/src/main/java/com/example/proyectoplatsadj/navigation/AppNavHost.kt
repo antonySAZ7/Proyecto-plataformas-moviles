@@ -24,9 +24,7 @@ import com.example.proyectoplatsadj.feature.taskslist.*
 import com.example.proyectoplatsadj.viewmodel.*
 import kotlinx.serialization.Serializable
 
-// ============================================
-// DESTINATIONS TYPE-SAFE
-// ============================================
+
 
 @Serializable object SplashDestination
 @Serializable object WelcomeDestination
@@ -45,7 +43,6 @@ fun AppNavHost() {
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = currentBackStackEntry?.destination?.route
 
-    // Solo mostrar bottom bar en pantallas principales
     val showBottomBar = currentRoute in listOf(
         HomeDestination::class.qualifiedName,
         CalendarDestination::class.qualifiedName,
@@ -94,11 +91,7 @@ fun AppNavHost() {
             startDestination = SplashDestination,
             modifier = Modifier.padding(paddingValues)
         ) {
-            // ============================================
-            // FLUJO DE AUTENTICACIÓN
-            // ============================================
 
-            // SPLASH
             composable<SplashDestination> {
                 SplashScreen(
                     onTimeout = {
@@ -109,7 +102,6 @@ fun AppNavHost() {
                 )
             }
 
-            // WELCOME (Onboarding)
             composable<WelcomeDestination> {
                 WelcomeScreen(
                     onRegisterClick = { navController.navigate(RegisterDestination) },
@@ -117,7 +109,6 @@ fun AppNavHost() {
                 )
             }
 
-            // LOGIN - CON VIEWMODEL
             composable<LoginDestination> {
                 val loginViewModel: LoginViewModel = viewModel()
                 LoginScreen(
@@ -132,7 +123,6 @@ fun AppNavHost() {
                 )
             }
 
-            // REGISTER - CON VIEWMODEL
             composable<RegisterDestination> {
                 val registerViewModel: RegisterViewModel = viewModel()
                 RegisterScreen(
@@ -146,11 +136,7 @@ fun AppNavHost() {
                 )
             }
 
-            // ============================================
-            // PANTALLAS PRINCIPALES - CON VIEWMODELS Y APIs
-            // ============================================
 
-            // HOME - CON VIEWMODEL
             composable<HomeDestination> {
                 val homeViewModel: HomeViewModel = viewModel()
                 val uiState by homeViewModel.uiState.collectAsState()
@@ -162,7 +148,6 @@ fun AppNavHost() {
                 )
             }
 
-            // CALENDAR - CON VIEWMODEL
             composable<CalendarDestination> {
                 val calendarViewModel: CalendarViewModel = viewModel()
                 val calendarState by calendarViewModel.uiState.collectAsState()
@@ -173,7 +158,6 @@ fun AppNavHost() {
                 )
             }
 
-            // TASKS LIST - CON VIEWMODEL
             composable<TasksListDestination> {
                 val tasksViewModel: TasksListViewModel = viewModel()
                 val uiState by tasksViewModel.uiState.collectAsState()
@@ -186,12 +170,10 @@ fun AppNavHost() {
                 )
             }
 
-            // NEW TASK - CON VIEWMODEL
             composable<NewTaskDestination> {
                 val newTaskViewModel: NewTaskViewModel = viewModel()
                 val uiState by newTaskViewModel.uiState.collectAsState()
 
-                // Escuchar cuando la tarea se crea
                 LaunchedEffect(Unit) {
                     newTaskViewModel.taskCreated.collect {
                         navController.popBackStack()
@@ -207,7 +189,6 @@ fun AppNavHost() {
                 )
             }
 
-            // FORGOT PASSWORD
             composable<ForgotPasswordDestination> {
                 val forgotViewModel: ForgotPasswordViewModel = viewModel()
                 ForgotPasswordScreen(

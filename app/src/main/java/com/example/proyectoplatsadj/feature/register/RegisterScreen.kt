@@ -24,7 +24,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.proyectoplatsadj.R
 import com.example.proyectoplatsadj.viewmodel.RegisterViewModel
 
-// Estados de UI
 sealed interface RegisterUiState {
     data object Idle : RegisterUiState
     data object Loading : RegisterUiState
@@ -43,7 +42,6 @@ fun RegisterScreen(
     var passwordVisible by remember { mutableStateOf(false) }
     var confirmVisible by remember { mutableStateOf(false) }
 
-    // Escuchar cuando el registro es exitoso
     LaunchedEffect(Unit) {
         viewModel.registerSuccess.collect {
             onRegisterSuccess()
@@ -70,7 +68,6 @@ fun RegisterScreen(
         )
         Spacer(modifier = Modifier.height(24.dp))
 
-        // Campo Nombre con validación
         Column(modifier = Modifier.fillMaxWidth()) {
             OutlinedTextField(
                 value = formState.firstName,
@@ -97,7 +94,6 @@ fun RegisterScreen(
         }
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Campo Apellido con validación
         Column(modifier = Modifier.fillMaxWidth()) {
             OutlinedTextField(
                 value = formState.lastName,
@@ -124,7 +120,6 @@ fun RegisterScreen(
         }
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Campo Email con validación
         Column(modifier = Modifier.fillMaxWidth()) {
             OutlinedTextField(
                 value = formState.email,
@@ -154,7 +149,6 @@ fun RegisterScreen(
         }
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Campo Contraseña con validación
         Column(modifier = Modifier.fillMaxWidth()) {
             OutlinedTextField(
                 value = formState.password,
@@ -201,7 +195,6 @@ fun RegisterScreen(
         }
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Campo Confirmar Contraseña con validación
         Column(modifier = Modifier.fillMaxWidth()) {
             OutlinedTextField(
                 value = formState.confirmPassword,

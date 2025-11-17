@@ -23,7 +23,6 @@ fun WelcomeScreen(
     onLoginClick: () -> Unit
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
-        // Espacio para la imagen de fondo
         Image(
             painter = painterResource(id = R.drawable.welcomebg),
             contentDescription = "Fondo de bienvenida",
@@ -32,15 +31,13 @@ fun WelcomeScreen(
                 .height(650.dp)
         )
 
-        // Card con texto y botones, solo esquinas superiores redondeadas
         Card(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .padding(16.dp)
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
-                .background(Color(0xFFF5F5F5).copy(alpha = 0.9f)), // Color aproximado al de la imagen
-            elevation = CardDefaults.cardElevation(4.dp)
+                .background(Color(0xFFF5F5F5).copy(alpha = 0.9f)),
         ) {
             Column(
                 modifier = Modifier.padding(24.dp),

@@ -11,11 +11,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.*
 import java.util.concurrent.TimeUnit
 
-// ============================================
-// API INTERFACES
-// ============================================
 
-// API de Autenticación (ReqRes)
 interface AuthApiService {
     @POST("api/register")
     suspend fun register(@Body request: RegisterRequest): Response<RegisterResponse>
@@ -30,7 +26,6 @@ interface AuthApiService {
     suspend fun forgotPassword(@Body body: Map<String, String>): Response<Unit>
 }
 
-// API de Tareas (JSONPlaceholder)
 interface TaskApiService {
     @GET("todos")
     suspend fun getAllTodos(): Response<List<Task>>
@@ -51,9 +46,7 @@ interface TaskApiService {
     suspend fun getTodosByUser(@Path("userId") userId: Int): Response<List<Task>>
 }
 
-// ============================================
-// RETROFIT INSTANCE
-// ============================================
+
 
 object RetrofitInstance {
 
@@ -72,14 +65,12 @@ object RetrofitInstance {
             .build()
     }
 
-    // Retrofit para autenticación (ReqRes API)
     private val authRetrofit = Retrofit.Builder()
         .baseUrl("https://reqres.in/")
         .client(createOkHttpClient())
         .addConverterFactory(GsonConverterFactory.create())
         .build()
 
-    // Retrofit para tareas (JSONPlaceholder)
     private val taskRetrofit = Retrofit.Builder()
         .baseUrl("https://jsonplaceholder.typicode.com/")
         .client(createOkHttpClient())

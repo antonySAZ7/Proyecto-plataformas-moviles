@@ -42,9 +42,7 @@ android {
 }
 
 dependencies {
-    // ===================================
-    // DEPENDENCIAS BASE
-    // ===================================
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -54,7 +52,7 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
 
-    // Testing
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -63,57 +61,35 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
-    // ===================================
-    // NAVEGACIÓN TYPE-SAFE
-    // ===================================
+
     implementation("androidx.navigation:navigation-compose:2.8.3")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
 
-    // ===================================
-    // VIEWMODEL & LIFECYCLE
-    // ===================================
+
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.5")
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.5")
 
-    // ===================================
-    // COROUTINES
-    // ===================================
+
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1")
 
-    // ===================================
-    // RETROFIT (APIs REST)
-    // ===================================
+
     val retrofitVersion = "2.11.0"
     implementation("com.squareup.retrofit2:retrofit:$retrofitVersion")
     implementation("com.squareup.retrofit2:converter-gson:$retrofitVersion")
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
     implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
 
-    // ===================================
-    // ROOM DATABASE (Cache local)
-    // ===================================
+
     val roomVersion = "2.6.1"
     implementation("androidx.room:room-runtime:$roomVersion")
     implementation("androidx.room:room-ktx:$roomVersion")
     ksp("androidx.room:room-compiler:$roomVersion")
 
-    // ===================================
-    // DATASTORE (SharedPreferences moderno)
-    // ===================================
+
     implementation("androidx.datastore:datastore-preferences:1.1.1")
 
-    // ===================================
-    // KOTLINX DATETIME
-    // ===================================
+   
     implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.1")
-
-    // ===================================
-    // COIL (Carga de imágenes)
-    // ===================================
     implementation("io.coil-kt:coil-compose:2.7.0")
-
-    // ===================================
-    // WORKMANAGER (Para notificaciones programadas) ⬅️ NUEVO
-    // ===================================
     implementation("androidx.work:work-runtime-ktx:2.9.0")
 }

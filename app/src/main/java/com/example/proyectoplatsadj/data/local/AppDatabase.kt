@@ -5,9 +5,7 @@ import androidx.room.*
 import com.example.proyectoplatsadj.data.model.Task
 import kotlinx.coroutines.flow.Flow
 
-// ============================================
-// ENTIDAD USER
-// ============================================
+
 
 @Entity(tableName = "users")
 data class User(
@@ -20,9 +18,7 @@ data class User(
     val createdAt: Long = System.currentTimeMillis()
 )
 
-// ============================================
-// USER DAO
-// ============================================
+
 
 @Dao
 interface UserDao {
@@ -43,9 +39,7 @@ interface UserDao {
     suspend fun getAllUsers(): List<User>
 }
 
-// ============================================
-// TASK DAO
-// ============================================
+
 
 @Dao
 interface TaskDao {
@@ -77,18 +71,16 @@ interface TaskDao {
     fun getTodayTasks(): Flow<List<Task>>
 }
 
-// ============================================
-// DATABASE
-// ============================================
+
 
 @Database(
-    entities = [Task::class, User::class],  // ← AGREGAMOS User aquí
-    version = 5,  // ← INCREMENTAMOS la versión
+    entities = [Task::class, User::class],
+    version = 5,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract fun taskDao(): TaskDao
-    abstract fun userDao(): UserDao  // ← AGREGAMOS UserDao
+    abstract fun userDao(): UserDao
 
     companion object {
         @Volatile

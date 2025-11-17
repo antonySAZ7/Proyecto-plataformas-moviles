@@ -14,7 +14,6 @@ class TaskReminderWorker(
 
     override suspend fun doWork(): Result {
         return try {
-            // Obtener datos de la tarea desde los input data
             val taskId = inputData.getInt("TASK_ID", -1)
             val taskTitle = inputData.getString("TASK_TITLE") ?: return Result.failure()
             val taskDetail = inputData.getString("TASK_DETAIL")
@@ -26,7 +25,6 @@ class TaskReminderWorker(
                 return Result.failure()
             }
 
-            // Mostrar notificación
             NotificationHelper.showTaskReminderNotification(
                 applicationContext,
                 taskId,

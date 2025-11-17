@@ -33,7 +33,7 @@ fun NewTaskScreen(
     var detail by remember { mutableStateOf("") }
     var selectedDate by remember { mutableStateOf(LocalDate.now()) }
     var selectedTime by remember { mutableStateOf(LocalTime.now()) }
-    var selectedDifficulty by remember { mutableStateOf(2) } // 1=Fácil, 2=Medio, 3=Difícil
+    var selectedDifficulty by remember { mutableStateOf(2) }
 
     var showDatePicker by remember { mutableStateOf(false) }
     var showTimePicker by remember { mutableStateOf(false) }
@@ -57,7 +57,6 @@ fun NewTaskScreen(
                 .padding(24.dp),
             verticalArrangement = Arrangement.spacedBy(20.dp)
         ) {
-            // Estado de carga o error
             when (state) {
                 NewTaskUiState.Loading -> {
                     LinearProgressIndicator(
@@ -91,8 +90,7 @@ fun NewTaskScreen(
                 else -> {}
             }
 
-            // Campo: Nombre de la tarea
-            OutlinedTextField(
+                                                                                                                                                                    OutlinedTextField(
                 value = title,
                 onValueChange = { title = it },
                 label = { Text("Nombre de la tarea") },
@@ -101,7 +99,6 @@ fun NewTaskScreen(
                 singleLine = true
             )
 
-            // Campo: Descripción/Detalles
             OutlinedTextField(
                 value = detail,
                 onValueChange = { detail = it },
@@ -112,7 +109,6 @@ fun NewTaskScreen(
                 maxLines = 5
             )
 
-            // Selector de Fecha
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 colors = CardDefaults.cardColors(
@@ -141,7 +137,6 @@ fun NewTaskScreen(
                 }
             }
 
-            // Selector de Hora
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 colors = CardDefaults.cardColors(
@@ -170,7 +165,6 @@ fun NewTaskScreen(
                 }
             }
 
-            // Selector de Dificultad
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 colors = CardDefaults.cardColors(
@@ -191,7 +185,6 @@ fun NewTaskScreen(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
-                        // Botón Fácil
                         DifficultyButton(
                             text = "Fácil",
                             color = Color(0xFF4CAF50),
@@ -200,7 +193,6 @@ fun NewTaskScreen(
                             modifier = Modifier.weight(1f)
                         )
 
-                        // Botón Medio
                         DifficultyButton(
                             text = "Medio",
                             color = Color(0xFFFFC107),
@@ -209,7 +201,6 @@ fun NewTaskScreen(
                             modifier = Modifier.weight(1f)
                         )
 
-                        // Botón Difícil
                         DifficultyButton(
                             text = "Difícil",
                             color = Color(0xFFF44336),
@@ -223,7 +214,6 @@ fun NewTaskScreen(
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Botón para agregar tarea
             Button(
                 onClick = {
                     val dateString = selectedDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
@@ -253,7 +243,6 @@ fun NewTaskScreen(
             }
         }
 
-        // DatePicker Dialog
         if (showDatePicker) {
             val datePickerState = rememberDatePickerState(
                 initialSelectedDateMillis = java.time.ZoneId.systemDefault()
@@ -284,7 +273,6 @@ fun NewTaskScreen(
             }
         }
 
-        // TimePicker Dialog
         if (showTimePicker) {
             val timePickerState = rememberTimePickerState(
                 initialHour = selectedTime.hour,

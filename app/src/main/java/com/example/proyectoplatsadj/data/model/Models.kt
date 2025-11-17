@@ -4,9 +4,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
 
-// ============================================
-// MODELOS PARA AUTENTICACIÓN
-// ============================================
+
 
 data class LoginRequest(
     val email: String,
@@ -44,9 +42,7 @@ data class User(
     @SerializedName("last_name") val lastName: String?
 )
 
-// ============================================
-// MODELOS PARA TAREAS (JSONPlaceholder + Room)
-// ============================================
+
 
 @Entity(tableName = "tasks")
 data class Task(
@@ -55,29 +51,24 @@ data class Task(
     val title: String,
     val completed: Boolean = false,
 
-    // Campos adicionales locales
     val detail: String? = null,
-    val dueDate: String? = null,  // Formato: "2025-11-16"
-    val dueTime: String? = null,  // Formato: "14:30" (hora:minuto)
-    val difficulty: Int = 2, // 1=fácil(verde), 2=medio(amarillo), 3=difícil(rojo)
-    val priority: Int = 3, // Mantenemos por compatibilidad
+    val dueDate: String? = null,
+    val dueTime: String? = null,
+    val difficulty: Int = 2,
+    val priority: Int = 3,
     val createdAt: Long = System.currentTimeMillis()
 ) {
-    /**
-     * Obtiene el color según la dificultad
-     */
+
     fun getDifficultyColor(): Long {
         return when (difficulty) {
-            1 -> 0xFF4CAF50 // Verde - Fácil
-            2 -> 0xFFFFC107 // Amarillo - Medio
-            3 -> 0xFFF44336 // Rojo - Difícil
-            else -> 0xFF9E9E9E // Gris por defecto
+            1 -> 0xFF4CAF50
+            2 -> 0xFFFFC107
+            3 -> 0xFFF44336
+            else -> 0xFF9E9E9E
         }
     }
 
-    /**
-     * Obtiene el texto de la dificultad
-     */
+
     fun getDifficultyText(): String {
         return when (difficulty) {
             1 -> "Fácil"
@@ -87,9 +78,7 @@ data class Task(
         }
     }
 
-    /**
-     * Obtiene la fecha y hora formateada
-     */
+
     fun getFormattedDateTime(): String {
         val datePart = dueDate ?: "Sin fecha"
         val timePart = dueTime ?: ""
@@ -101,14 +90,12 @@ data class Task(
     }
 }
 
-// Para crear nueva tarea
 data class CreateTaskRequest(
     val title: String,
     val completed: Boolean = false,
     val userId: Int = 1
 )
 
-// Respuesta al crear tarea
 data class CreateTaskResponse(
     val id: Int,
     val title: String,
@@ -116,9 +103,7 @@ data class CreateTaskResponse(
     val userId: Int
 )
 
-// ============================================
-// ESTADO DE UI (genérico)
-// ============================================
+
 
 sealed class ApiResult<out T> {
     data class Success<T>(val data: T) : ApiResult<T>()

@@ -21,9 +21,7 @@ import com.example.proyectoplatsadj.feature.calendar.CalendarUiState
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
-// ============================================
-// LOGIN FORM STATE
-// ============================================
+
 
 data class LoginFormState(
     val email: String = "",
@@ -38,9 +36,7 @@ data class LoginFormState(
                 passwordError == null
 }
 
-// ============================================
-// LOGIN VIEWMODEL
-// ============================================
+
 
 class LoginViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -125,9 +121,7 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
     }
 }
 
-// ============================================
-// REGISTER FORM STATE
-// ============================================
+
 
 data class RegisterFormState(
     val firstName: String = "",
@@ -155,9 +149,7 @@ data class RegisterFormState(
                 password == confirmPassword
 }
 
-// ============================================
-// REGISTER VIEWMODEL
-// ============================================
+
 
 class RegisterViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -303,9 +295,7 @@ class RegisterViewModel(application: Application) : AndroidViewModel(application
     }
 }
 
-// ============================================
-// HOME VIEWMODEL
-// ============================================
+
 
 class HomeViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -357,9 +347,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
     }
 }
 
-// ============================================
-// TASKS LIST VIEWMODEL
-// ============================================
+
 
 class TasksListViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -421,10 +409,7 @@ class TasksListViewModel(application: Application) : AndroidViewModel(applicatio
     }
 }
 
-// ============================================
-// NEW TASK VIEWMODEL - CON NOTIFICACIONES
-// ============================================
-// REEMPLAZA SOLO ESTA CLASE en ViewModels.kt
+
 
 class NewTaskViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -450,7 +435,6 @@ class NewTaskViewModel(application: Application) : AndroidViewModel(application)
                 is ApiResult.Success -> {
                     val createdTask = result.data
 
-                    // ✨ NUEVO: Mostrar notificación de tarea creada
                     com.example.proyectoplatsadj.utils.NotificationHelper.showTaskCreatedNotification(
                         getApplication(),
                         createdTask.id,
@@ -458,7 +442,6 @@ class NewTaskViewModel(application: Application) : AndroidViewModel(application)
                         createdTask.detail
                     )
 
-                    // ✨ NUEVO: Programar recordatorios
                     com.example.proyectoplatsadj.utils.NotificationScheduler.scheduleMultipleReminders(
                         getApplication(),
                         createdTask.id,
@@ -485,9 +468,6 @@ class NewTaskViewModel(application: Application) : AndroidViewModel(application)
     }
 }
 
-// ============================================
-// CALENDAR VIEWMODEL
-// ============================================
 
 class CalendarViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -549,9 +529,7 @@ class CalendarViewModel(application: Application) : AndroidViewModel(application
     }
 }
 
-// ============================================
-// FORGOT PASSWORD VIEWMODEL
-// ============================================
+
 
 class ForgotPasswordViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -597,10 +575,6 @@ class ForgotPasswordViewModel(application: Application) : AndroidViewModel(appli
         _uiState.value = ForgotPasswordUiState.Idle
     }
 }
-
-// ============================================
-// UI STATES PARA FORGOT PASSWORD
-// ============================================
 
 sealed interface ForgotPasswordUiState {
     object Idle : ForgotPasswordUiState

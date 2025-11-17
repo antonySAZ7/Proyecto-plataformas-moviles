@@ -14,24 +14,19 @@ import com.example.proyectoplatsadj.utils.NotificationHelper
 
 class MainActivity : ComponentActivity() {
 
-    // Launcher para solicitar permiso de notificaciones (Android 13+)
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { isGranted: Boolean ->
         if (isGranted) {
-            // Permiso concedido
         } else {
-            // Permiso denegado - La app funcionará pero sin notificaciones
         }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // ✨ Crear canales de notificación
         NotificationHelper.createNotificationChannels(this)
 
-        // ✨ Solicitar permiso de notificaciones en Android 13+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (ContextCompat.checkSelfPermission(
                     this,
