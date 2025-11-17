@@ -4,14 +4,18 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -33,15 +37,11 @@ fun RegisterScreen(
     onLoginClick: () -> Unit,
     viewModel: RegisterViewModel = viewModel()
 ) {
-    var firstName by remember { mutableStateOf("") }
-    var lastName by remember { mutableStateOf("") }
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
-    var confirmPassword by remember { mutableStateOf("") }
+    val formState by viewModel.formState.collectAsState()
+    val uiState by viewModel.uiState.collectAsState()
+    val focusManager = LocalFocusManager.current
     var passwordVisible by remember { mutableStateOf(false) }
     var confirmVisible by remember { mutableStateOf(false) }
-
-    val uiState by viewModel.uiState.collectAsState()
 
     // Escuchar cuando el registro es exitoso
     LaunchedEffect(Unit) {
@@ -70,84 +70,193 @@ fun RegisterScreen(
         )
         Spacer(modifier = Modifier.height(24.dp))
 
-        OutlinedTextField(
-            value = firstName,
-            onValueChange = { firstName = it },
-            label = { Text("Nombre(s)") },
-            placeholder = { Text("John") },
-            modifier = Modifier.fillMaxWidth(),
-            enabled = uiState !is RegisterUiState.Loading
-        )
+        // Campo Nombre con validación
+        Column(modifier = Modifier.fillMaxWidth()) {
+            OutlinedTextField(
+                value = formState.firstName,
+                onValueChange = { viewModel.onFirstNameChange(it) },
+                label = { Text("Nombre(s)") },
+                placeholder = { Text("Jose") },
+                modifier = Modifier.fillMaxWidth(),
+                enabled = uiState !is RegisterUiState.Loading,
+                isError = formState.firstNameError != null,
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+                keyboardActions = KeyboardActions(
+                    onNext = { focusManager.moveFocus(FocusDirection.Down) }
+                ),
+                singleLine = true
+            )
+            if (formState.firstNameError != null) {
+                Text(
+                    text = formState.firstNameError ?: "",
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodySmall,
+                    modifier = Modifier.padding(start = 16.dp, top = 4.dp)
+                )
+            }
+        }
         Spacer(modifier = Modifier.height(16.dp))
 
-        OutlinedTextField(
-            value = lastName,
-            onValueChange = { lastName = it },
-            label = { Text("Apellido(s)") },
-            placeholder = { Text("Doe") },
-            modifier = Modifier.fillMaxWidth(),
-            enabled = uiState !is RegisterUiState.Loading
-        )
+        // Campo Apellido con validación
+        Column(modifier = Modifier.fillMaxWidth()) {
+            OutlinedTextField(
+                value = formState.lastName,
+                onValueChange = { viewModel.onLastNameChange(it) },
+                label = { Text("Apellido(s)") },
+                placeholder = { Text("Ovando") },
+                modifier = Modifier.fillMaxWidth(),
+                enabled = uiState !is RegisterUiState.Loading,
+                isError = formState.lastNameError != null,
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+                keyboardActions = KeyboardActions(
+                    onNext = { focusManager.moveFocus(FocusDirection.Down) }
+                ),
+                singleLine = true
+            )
+            if (formState.lastNameError != null) {
+                Text(
+                    text = formState.lastNameError ?: "",
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodySmall,
+                    modifier = Modifier.padding(start = 16.dp, top = 4.dp)
+                )
+            }
+        }
         Spacer(modifier = Modifier.height(16.dp))
 
-        OutlinedTextField(
-            value = email,
-            onValueChange = { email = it },
-            label = { Text("Correo") },
-            placeholder = { Text("Ingresa tu correo") },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-            modifier = Modifier.fillMaxWidth(),
-            enabled = uiState !is RegisterUiState.Loading
-        )
+        // Campo Email con validación
+        Column(modifier = Modifier.fillMaxWidth()) {
+            OutlinedTextField(
+                value = formState.email,
+                onValueChange = { viewModel.onEmailChange(it) },
+                label = { Text("Correo") },
+                placeholder = { Text("ejemplo@correo.com") },
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Email,
+                    imeAction = ImeAction.Next
+                ),
+                keyboardActions = KeyboardActions(
+                    onNext = { focusManager.moveFocus(FocusDirection.Down) }
+                ),
+                modifier = Modifier.fillMaxWidth(),
+                enabled = uiState !is RegisterUiState.Loading,
+                isError = formState.emailError != null,
+                singleLine = true
+            )
+            if (formState.emailError != null) {
+                Text(
+                    text = formState.emailError ?: "",
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodySmall,
+                    modifier = Modifier.padding(start = 16.dp, top = 4.dp)
+                )
+            }
+        }
         Spacer(modifier = Modifier.height(16.dp))
 
-        OutlinedTextField(
-            value = password,
-            onValueChange = { password = it },
-            label = { Text("Contraseña") },
-            placeholder = { Text("Ingresa tu contraseña") },
-            visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-            trailingIcon = {
-                IconButton(onClick = { passwordVisible = !passwordVisible }) {
-                    Icon(
-                        painter = painterResource(
-                            id = if (passwordVisible) android.R.drawable.ic_menu_close_clear_cancel
-                            else android.R.drawable.ic_menu_view
-                        ),
-                        contentDescription = if (passwordVisible) "Ocultar" else "Mostrar"
-                    )
-                }
-            },
-            supportingText = { Text("Must contain 8 char.") },
-            modifier = Modifier.fillMaxWidth(),
-            enabled = uiState !is RegisterUiState.Loading
-        )
+        // Campo Contraseña con validación
+        Column(modifier = Modifier.fillMaxWidth()) {
+            OutlinedTextField(
+                value = formState.password,
+                onValueChange = { viewModel.onPasswordChange(it) },
+                label = { Text("Contraseña") },
+                placeholder = { Text("Ingresa tu contraseña") },
+                visualTransformation = if (passwordVisible)
+                    VisualTransformation.None
+                else
+                    PasswordVisualTransformation(),
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Password,
+                    imeAction = ImeAction.Next
+                ),
+                keyboardActions = KeyboardActions(
+                    onNext = { focusManager.moveFocus(FocusDirection.Down) }
+                ),
+                trailingIcon = {
+                    IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                        Icon(
+                            painter = painterResource(
+                                id = if (passwordVisible)
+                                    android.R.drawable.ic_menu_close_clear_cancel
+                                else
+                                    android.R.drawable.ic_menu_view
+                            ),
+                            contentDescription = if (passwordVisible) "Ocultar" else "Mostrar"
+                        )
+                    }
+                },
+                modifier = Modifier.fillMaxWidth(),
+                enabled = uiState !is RegisterUiState.Loading,
+                isError = formState.passwordError != null,
+                singleLine = true
+            )
+            if (formState.passwordError != null) {
+                Text(
+                    text = formState.passwordError ?: "",
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodySmall,
+                    modifier = Modifier.padding(start = 16.dp, top = 4.dp)
+                )
+            }
+        }
         Spacer(modifier = Modifier.height(16.dp))
 
-        OutlinedTextField(
-            value = confirmPassword,
-            onValueChange = { confirmPassword = it },
-            label = { Text("Confirmar contraseña") },
-            placeholder = { Text("Ingresa tu contraseña") },
-            visualTransformation = if (confirmVisible) VisualTransformation.None else PasswordVisualTransformation(),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-            trailingIcon = {
-                IconButton(onClick = { confirmVisible = !confirmVisible }) {
-                    Icon(
-                        painter = painterResource(
-                            id = if (confirmVisible) android.R.drawable.ic_menu_close_clear_cancel
-                            else android.R.drawable.ic_menu_view
-                        ),
-                        contentDescription = if (confirmVisible) "Ocultar" else "Mostrar"
-                    )
-                }
-            },
-            modifier = Modifier.fillMaxWidth(),
-            enabled = uiState !is RegisterUiState.Loading
-        )
+        // Campo Confirmar Contraseña con validación
+        Column(modifier = Modifier.fillMaxWidth()) {
+            OutlinedTextField(
+                value = formState.confirmPassword,
+                onValueChange = { viewModel.onConfirmPasswordChange(it) },
+                label = { Text("Confirmar contraseña") },
+                placeholder = { Text("Confirma tu contraseña") },
+                visualTransformation = if (confirmVisible)
+                    VisualTransformation.None
+                else
+                    PasswordVisualTransformation(),
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Password,
+                    imeAction = ImeAction.Done
+                ),
+                keyboardActions = KeyboardActions(
+                    onDone = {
+                        if (formState.isValid) {
+                            viewModel.register(
+                                formState.firstName,
+                                formState.lastName,
+                                formState.email,
+                                formState.password
+                            )
+                        }
+                    }
+                ),
+                trailingIcon = {
+                    IconButton(onClick = { confirmVisible = !confirmVisible }) {
+                        Icon(
+                            painter = painterResource(
+                                id = if (confirmVisible)
+                                    android.R.drawable.ic_menu_close_clear_cancel
+                                else
+                                    android.R.drawable.ic_menu_view
+                            ),
+                            contentDescription = if (confirmVisible) "Ocultar" else "Mostrar"
+                        )
+                    }
+                },
+                modifier = Modifier.fillMaxWidth(),
+                enabled = uiState !is RegisterUiState.Loading,
+                isError = formState.confirmPasswordError != null,
+                singleLine = true
+            )
+            if (formState.confirmPasswordError != null) {
+                Text(
+                    text = formState.confirmPasswordError ?: "",
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodySmall,
+                    modifier = Modifier.padding(start = 16.dp, top = 4.dp)
+                )
+            }
+        }
 
-        // Mostrar error si existe
+        // Mostrar error general si existe
         if (uiState is RegisterUiState.Error) {
             Spacer(modifier = Modifier.height(8.dp))
             Text(
@@ -161,11 +270,16 @@ fun RegisterScreen(
 
         Button(
             onClick = {
-                viewModel.register(firstName, lastName, email, password)
+                viewModel.register(
+                    formState.firstName,
+                    formState.lastName,
+                    formState.email,
+                    formState.password
+                )
             },
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50)),
             modifier = Modifier.fillMaxWidth(),
-            enabled = uiState !is RegisterUiState.Loading
+            enabled = formState.isValid && uiState !is RegisterUiState.Loading
         ) {
             if (uiState is RegisterUiState.Loading) {
                 CircularProgressIndicator(
