@@ -30,6 +30,7 @@ sealed interface LoginUiState {
 fun LoginScreen(
     onLoginSuccess: () -> Unit,
     onRegisterClick: () -> Unit,
+    onforgotPasswordClick: () -> Unit,
     viewModel: LoginViewModel = viewModel()
 ) {
     var email by remember { mutableStateOf("") }
@@ -114,7 +115,7 @@ fun LoginScreen(
             color = Color(0xFF2196F3),
             modifier = Modifier
                 .align(Alignment.End)
-                .clickable { /* Recuperar contraseña */ }
+                .clickable(onClick = onforgotPasswordClick)
         )
         Spacer(modifier = Modifier.height(24.dp))
 

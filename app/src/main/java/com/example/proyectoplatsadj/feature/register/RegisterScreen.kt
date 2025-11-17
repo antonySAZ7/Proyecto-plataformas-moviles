@@ -161,7 +161,7 @@ fun RegisterScreen(
 
         Button(
             onClick = {
-                viewModel.register(firstName, lastName, email, password, confirmPassword)
+                viewModel.register(firstName, lastName, email, password)
             },
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50)),
             modifier = Modifier.fillMaxWidth(),

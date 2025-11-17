@@ -14,6 +14,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.proyectoplatsadj.feature.home.*
 import com.example.proyectoplatsadj.feature.calendar.*
+import com.example.proyectoplatsadj.feature.forgotpassword.ForgotPasswordScreen
 import com.example.proyectoplatsadj.feature.newtask.*
 import com.example.proyectoplatsadj.feature.splash.SplashScreen
 import com.example.proyectoplatsadj.feature.onboarding.WelcomeScreen
@@ -35,6 +36,8 @@ import kotlinx.serialization.Serializable
 @Serializable object CalendarDestination
 @Serializable object TasksListDestination
 @Serializable object NewTaskDestination
+
+@Serializable object ForgotPasswordDestination
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -125,6 +128,7 @@ fun AppNavHost() {
                         }
                     },
                     onRegisterClick = { navController.navigate(RegisterDestination) },
+                    onforgotPasswordClick = { navController.navigate(ForgotPasswordDestination) },
                     viewModel = loginViewModel
                 )
             }
@@ -202,6 +206,14 @@ fun AppNavHost() {
                         newTaskViewModel.createTask(title, detail, date, priority)
                     },
                     onRetry = { newTaskViewModel.retry() }
+                )
+            }
+
+            composable<ForgotPasswordDestination> {
+                val forgotViewModel: ForgotPasswordViewModel = viewModel()
+                ForgotPasswordScreen(
+                    viewModel = forgotViewModel,
+                    onBackToLogin = { navController.popBackStack() }
                 )
             }
         }

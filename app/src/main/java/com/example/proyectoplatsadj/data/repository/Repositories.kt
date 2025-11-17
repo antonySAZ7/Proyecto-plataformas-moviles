@@ -3,6 +3,8 @@ package com.example.proyectoplatsadj.data.repository
 import com.example.proyectoplatsadj.data.local.TaskDao
 import com.example.proyectoplatsadj.data.model.*
 import com.example.proyectoplatsadj.data.remote.AuthApiService
+import com.example.proyectoplatsadj.data.remote.RetrofitInstance
+import com.example.proyectoplatsadj.data.remote.RetrofitInstance.authApi
 import com.example.proyectoplatsadj.data.remote.TaskApiService
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -43,6 +45,16 @@ class AuthRepository(private val authApi: AuthApiService) {
             }
         } catch (e: Exception) {
             ApiResult.Error("Error de conexión: ${e.message}", e)
+        }
+    }
+
+    fun forgotPassword(email: String): Flow<ApiResult<Unit>> = flow {
+        emit(ApiResult.Loading)
+        try {
+            authApi.forgotPassword(mapOf("email" to email))
+            emit(ApiResult.Success(Unit)) // ← CORRECTO: ApiResult<Unit>
+        } catch (e: Exception) {
+            emit(ApiResult.Error(e.message ?: "Error al enviar el correo"))
         }
     }
 }

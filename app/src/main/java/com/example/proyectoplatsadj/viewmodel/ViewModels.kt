@@ -1,7 +1,5 @@
 package com.example.proyectoplatsadj.viewmodel
 
-
-
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
@@ -48,7 +46,6 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
 
             when (val result = authRepository.login(email, password)) {
                 is ApiResult.Success -> {
-                    // Guardar token en DataStore
                     dataStore.saveAuthToken(result.data.token)
                     dataStore.saveUserInfo(1, email)
 
@@ -79,21 +76,10 @@ class RegisterViewModel(application: Application) : AndroidViewModel(application
     private val _registerSuccess = MutableSharedFlow<Boolean>()
     val registerSuccess: SharedFlow<Boolean> = _registerSuccess.asSharedFlow()
 
-    fun register(firstName: String, lastName: String, email: String, password: String, confirmPassword: String) {
-        // Validaciones
-        when {
-            firstName.isEmpty() || lastName.isEmpty() || email.isEmpty() || password.isEmpty() -> {
-                _uiState.value = RegisterUiState.Error("Por favor completa todos los campos")
-                return
-            }
-            password != confirmPassword -> {
-                _uiState.value = RegisterUiState.Error("Las contraseñas no coinciden")
-                return
-            }
-            password.length < 6 -> {
-                _uiState.value = RegisterUiState.Error("La contraseña debe tener al menos 6 caracteres")
-                return
-            }
+    fun register(firstName: String, lastName: String, email: String, password: String) {
+        if (firstName.isEmpty() || lastName.isEmpty() || email.isEmpty() || password.isEmpty()) {
+            _uiState.value = RegisterUiState.Error("Completa todos los campos")
+            return
         }
 
         viewModelScope.launch {
@@ -101,10 +87,8 @@ class RegisterViewModel(application: Application) : AndroidViewModel(application
 
             when (val result = authRepository.register(email, password, firstName, lastName)) {
                 is ApiResult.Success -> {
-                    // Guardar token en DataStore
                     dataStore.saveAuthToken(result.data.token)
-                    dataStore.saveUserInfo(result.data.id, email)
-
+                    dataStore.saveUserInfo(1, email)
                     _uiState.value = RegisterUiState.Idle
                     _registerSuccess.emit(true)
                 }
@@ -137,30 +121,20 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         viewModelScope.launch {
             _uiState.value = HomeUiState.Loading
 
-            taskRepository.getAllTasks().collect { result ->
-                when (result) {
-                    is ApiResult.Success -> {
-                        val todayTasks = result.data.take(5).map { task ->
-                            HomeTaskUi(
-                                id = task.id.toString(),
-                                title = task.title,
-                                detail = task.detail ?: "Sin detalles",
-                                priority = task.priority
-                            )
-                        }
+            taskRepository.getTodayTasks().collect { tasks ->
+                val homeTasks = tasks.map { task ->
+                    HomeTaskUi(
+                        id = task.id.toString(),
+                        title = task.title,
+                        detail = task.detail ?: "Sin detalles",
+                        priority = task.priority
+                    )
+                }
 
-                        _uiState.value = if (todayTasks.isEmpty()) {
-                            HomeUiState.Empty
-                        } else {
-                            HomeUiState.Content(todayTasks)
-                        }
-                    }
-                    is ApiResult.Error -> {
-                        _uiState.value = HomeUiState.Error(result.message)
-                    }
-                    is ApiResult.Loading -> {
-                        _uiState.value = HomeUiState.Loading
-                    }
+                _uiState.value = if (homeTasks.isEmpty()) {
+                    HomeUiState.Empty
+                } else {
+                    HomeUiState.Content(homeTasks)
                 }
             }
         }
@@ -271,4 +245,63 @@ class NewTaskViewModel(application: Application) : AndroidViewModel(application)
     fun retry() {
         _uiState.value = NewTaskUiState.Idle
     }
+}
+
+// ============================================
+// FORGOT PASSWORD VIEWMODEL
+// ============================================
+
+class ForgotPasswordViewModel(application: Application) : AndroidViewModel(application) {
+
+    private val authRepository = AuthRepository(RetrofitInstance.authApi)
+
+    private val _uiState = MutableStateFlow<ForgotPasswordUiState>(ForgotPasswordUiState.Idle)
+    val uiState: StateFlow<ForgotPasswordUiState> = _uiState.asStateFlow()
+
+    private val _email = MutableStateFlow("")
+    val email: StateFlow<String> = _email.asStateFlow()
+
+    fun updateEmail(newEmail: String) {
+        _email.value = newEmail
+    }
+
+    fun sendRecoveryEmail() {
+        if (_email.value.isBlank()) {
+            _uiState.value = ForgotPasswordUiState.Error("Por favor ingresa tu correo")
+            return
+        }
+
+        _uiState.value = ForgotPasswordUiState.Loading
+
+        viewModelScope.launch {
+            authRepository.forgotPassword(_email.value).collect { result ->
+                when (result) {
+                    is ApiResult.Success<Unit> -> {  // ← CORREGIDO: ApiResult.Success<Unit>
+                        _uiState.value = ForgotPasswordUiState.Success
+                    }
+                    is ApiResult.Error -> {
+                        _uiState.value = ForgotPasswordUiState.Error(result.message)
+                    }
+                    is ApiResult.Loading -> {
+                        _uiState.value = ForgotPasswordUiState.Loading
+                    }
+                }
+            }
+        }
+    }
+
+    fun retry() {
+        _uiState.value = ForgotPasswordUiState.Idle
+    }
+}
+
+// ============================================
+// UI STATES PARA FORGOT PASSWORD
+// ============================================
+
+sealed interface ForgotPasswordUiState {
+    object Idle : ForgotPasswordUiState
+    object Loading : ForgotPasswordUiState
+    object Success : ForgotPasswordUiState
+    data class Error(val message: String) : ForgotPasswordUiState
 }

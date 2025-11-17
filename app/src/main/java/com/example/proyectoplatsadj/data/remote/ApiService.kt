@@ -25,6 +25,9 @@ interface AuthApiService {
 
     @GET("api/users/{id}")
     suspend fun getUser(@Path("id") userId: Int): Response<User>
+
+    @POST("forgot-password")
+    suspend fun forgotPassword(@Body body: Map<String, String>): Response<Unit>
 }
 
 // API de Tareas (JSONPlaceholder)
